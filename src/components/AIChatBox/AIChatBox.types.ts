@@ -1,7 +1,7 @@
 import { Message } from '../../types/global';
 
 export interface AIChatBoxProps {
-  onSendMessage?: (message: string) => Promise<string>;
+  onSendMessage?: (message: string, model?: string) => Promise<string>;
   placeholder?: string;
   height?: string;
   className?: string;

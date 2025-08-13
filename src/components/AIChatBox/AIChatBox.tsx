@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Send, Bot, User, AlertCircle, Trash2 } from 'lucide-react';
+import { Send, Bot, User, AlertCircle, Trash2, Settings } from 'lucide-react';
 import { AIChatBoxProps, ChatState } from './AIChatBox.types';
 import { Message } from '../../types/global';
+import ModelSelector from './ModelSelector';
 
 const AIChatBox: React.FC<AIChatBoxProps> = ({
   onSendMessage,
@@ -27,6 +28,8 @@ const AIChatBox: React.FC<AIChatBoxProps> = ({
   });
   
   const [inputValue, setInputValue] = useState('');
+  const [selectedModel, setSelectedModel] = useState('gpt-3.5-turbo');
+  const [showSettings, setShowSettings] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -77,7 +80,7 @@ const AIChatBox: React.FC<AIChatBoxProps> = ({
 
     try {
       const aiResponseText = onSendMessage 
-        ? await onSendMessage(userMessage.content)
+        ? await onSendMessage(userMessage.content, selectedModel)
         : await mockAIResponse(userMessage.content);
 
       const aiMessage: Message = {
@@ -151,26 +154,55 @@ const AIChatBox: React.FC<AIChatBoxProps> = ({
     >
       {/* 聊天头部 */}
       <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-t-lg">
-        <div className="flex items-center">
-          <Bot className="w-6 h-6 mr-2" />
-          <h3 className="font-semibold">AI助手</h3>
+        <div className="flex items-center space-x-3">
+          <Bot className="w-6 h-6" />
+          <div>
+            <h3 className="font-semibold">AI助手</h3>
+            <p className="text-xs text-blue-100">使用 {selectedModel}</p>
+          </div>
         </div>
         
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center">
-            <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
+        <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2">
+            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
             <span className="text-sm">在线</span>
           </div>
           
           <button
+            onClick={() => setShowSettings(!showSettings)}
+            className="p-1.5 hover:bg-white/10 rounded transition-colors"
+            title="设置"
+          >
+            <Settings className="w-4 h-4" />
+          </button>
+          
+          <button
             onClick={handleClearChat}
-            className="p-1 hover:bg-white/10 rounded transition-colors"
+            className="p-1.5 hover:bg-white/10 rounded transition-colors"
             title="清空聊天记录"
           >
             <Trash2 className="w-4 h-4" />
           </button>
         </div>
       </div>
+
+      {/* 模型选择器 */}
+      {showSettings && (
+        <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
+          <div className="space-y-3">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                选择AI模型
+              </label>
+              <ModelSelector
+                selectedModel={selectedModel}
+                onModelChange={setSelectedModel}
+                disabled={state.isLoading}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 错误提示 */}
       {state.error && (
