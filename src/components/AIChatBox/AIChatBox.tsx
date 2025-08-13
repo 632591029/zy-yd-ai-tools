@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Send, Bot, User, AlertCircle, Trash2 } from 'lucide-react';
 import { AIChatBoxProps, ChatState } from './AIChatBox.types';
-import { Message } from '@/types/global';
+import { Message } from '../../types/global';
 
 const AIChatBox: React.FC<AIChatBoxProps> = ({
   onSendMessage,
