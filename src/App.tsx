@@ -6,7 +6,7 @@ import './App.css';
 
 const App: React.FC = () => {
   // 自定义消息处理函数
-  const handleSendMessage = async (message: string, model: string = 'gpt-3.5-turbo'): Promise<string> => {
+  const handleSendMessage = async (message: string, model: string = 'deepseek-chat'): Promise<string> => {
     try {
       console.log('🚀 发送消息到Workers API:', {
         message: message.substring(0, 50) + '...',
@@ -39,12 +39,12 @@ const App: React.FC = () => {
           </p>
           <div className="flex justify-center space-x-6 text-sm text-gray-500">
             <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-              <span>OpenAI GPT</span>
-            </div>
-            <div className="flex items-center space-x-2">
               <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
               <span>DeepSeek</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+              <span>OpenAI GPT</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse"></div>
@@ -75,7 +75,7 @@ const App: React.FC = () => {
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded text-xs">3</span>
-                  <span>支持GPT-3.5、GPT-4、DeepSeek等多种模型</span>
+                  <span>支持DeepSeek、GPT-3.5、GPT-4等多种模型</span>
                 </div>
               </div>
             </div>
