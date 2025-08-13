@@ -1,7 +1,7 @@
 import React from 'react';
-import { AIChatBox } from '@/components';
-import { sendChatMessage } from '@/utils/api';
-import { APP_NAME } from '@/utils/constants';
+import { AIChatBox } from './components';
+import { sendChatMessage } from './utils/api';
+import { APP_NAME } from './utils/constants';
 import './App.css';
 
 const App: React.FC = () => {
