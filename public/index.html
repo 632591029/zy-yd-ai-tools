@@ -9,6 +9,12 @@
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <title>ZY-YD AI Tools</title>
+    <script>
+      // 确保正确的基础路径
+      if (window.location.pathname !== '/' && !window.location.pathname.endsWith('/')) {
+        window.history.replaceState(null, null, window.location.pathname + '/');
+      }
+    </script>
   </head>
   <body>
     <noscript>您需要启用JavaScript才能运行此应用。</noscript>

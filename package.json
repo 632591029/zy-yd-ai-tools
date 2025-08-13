@@ -2,10 +2,10 @@
   "name": "zy-yd-ai-tools",
   "version": "1.0.0",
   "private": true,
+  "homepage": ".",
   "description": "基于React+TypeScript的AI聊天工具集合",
   "author": "632591029",
   "license": "MIT",
-  "homepage": "https://github.com/632591029/zy-yd-ai-tools",
   "repository": {
     "type": "git",
     "url": "https://github.com/632591029/zy-yd-ai-tools.git"
