@@ -150,7 +150,7 @@ const AIChatBox: React.FC<AIChatBoxProps> = ({
       style={{ height }}
     >
       {/* 聊天头部 */}
-      <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-t-lg">
+      <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-t-lg">
         <div className="flex items-center">
           <Bot className="w-6 h-6 mr-2" />
           <h3 className="font-semibold">AI助手</h3>
@@ -198,8 +198,8 @@ const AIChatBox: React.FC<AIChatBoxProps> = ({
               <div
                 className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
                   message.sender === 'user' 
-                    ? 'bg-primary-500 text-white ml-2' 
-                    : 'bg-secondary-100 text-secondary-600 mr-2'
+                    ? 'bg-blue-500 text-white ml-2' 
+                    : 'bg-gray-100 text-gray-600 mr-2'
                 }`}
               >
                 {message.sender === 'user' ? (
@@ -213,8 +213,8 @@ const AIChatBox: React.FC<AIChatBoxProps> = ({
               <div
                 className={`px-4 py-2 rounded-lg ${
                   message.sender === 'user'
-                    ? 'bg-primary-500 text-white rounded-br-sm'
-                    : 'bg-secondary-50 text-secondary-900 rounded-bl-sm'
+                    ? 'bg-blue-500 text-white rounded-br-sm'
+                    : 'bg-gray-50 text-gray-900 rounded-bl-sm'
                 } shadow-sm`}
               >
                 <p className="text-sm leading-relaxed whitespace-pre-wrap">
@@ -225,8 +225,8 @@ const AIChatBox: React.FC<AIChatBoxProps> = ({
                   <p
                     className={`text-xs mt-1 ${
                       message.sender === 'user' 
-                        ? 'text-primary-100' 
-                        : 'text-secondary-500'
+                        ? 'text-blue-100' 
+                        : 'text-gray-500'
                     }`}
                   >
                     {formatTime(message.timestamp)}
@@ -241,18 +241,18 @@ const AIChatBox: React.FC<AIChatBoxProps> = ({
         {state.isLoading && (
           <div className="flex justify-start animate-fade-in">
             <div className="flex items-start">
-              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-secondary-100 text-secondary-600 mr-2 flex items-center justify-center">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-100 text-gray-600 mr-2 flex items-center justify-center">
                 <Bot className="w-4 h-4" />
               </div>
-              <div className="bg-secondary-50 px-4 py-2 rounded-lg rounded-bl-sm shadow-sm">
+              <div className="bg-gray-50 px-4 py-2 rounded-lg rounded-bl-sm shadow-sm">
                 <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-secondary-400 rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                   <div 
-                    className="w-2 h-2 bg-secondary-400 rounded-full animate-bounce" 
+                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" 
                     style={{animationDelay: '0.1s'}}
                   ></div>
                   <div 
-                    className="w-2 h-2 bg-secondary-400 rounded-full animate-bounce" 
+                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" 
                     style={{animationDelay: '0.2s'}}
                   ></div>
                 </div>
@@ -277,7 +277,7 @@ const AIChatBox: React.FC<AIChatBoxProps> = ({
               placeholder={disabled ? "聊天已禁用" : placeholder}
               disabled={state.isLoading || disabled}
               maxLength={maxLength}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 ${
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 ${
                 isInputTooLong 
                   ? 'border-red-300 focus:ring-red-500' 
                   : 'border-gray-300'
@@ -287,7 +287,7 @@ const AIChatBox: React.FC<AIChatBoxProps> = ({
             {/* 字符计数 */}
             <div className="flex justify-between items-center mt-1">
               <span className={`text-xs ${
-                isInputTooLong ? 'text-red-500' : 'text-secondary-500'
+                isInputTooLong ? 'text-red-500' : 'text-gray-500'
               }`}>
                 {inputValue.length}/{maxLength}
               </span>
@@ -297,7 +297,7 @@ const AIChatBox: React.FC<AIChatBoxProps> = ({
           <button
             onClick={handleSendMessage}
             disabled={!inputValue.trim() || state.isLoading || disabled || isInputTooLong}
-            className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center justify-center min-w-[44px]"
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center justify-center min-w-[44px]"
           >
             <Send className="w-4 h-4" />
           </button>
