@@ -52,6 +52,23 @@ export interface ChatResponse {
   };
 }
 
+// 根据模型获取优化参数
+function getOptimizedParams(model: string, temperature?: number, maxTokens?: number) {
+  // DeepSeek 模型优化参数
+  if (model.includes('deepseek')) {
+    return {
+      temperature: temperature !== undefined ? temperature : 0.3, // 降低随机性，提高响应速度
+      maxTokens: maxTokens !== undefined ? maxTokens : 800 // 减少输出长度
+    };
+  }
+  
+  // OpenAI 模型默认参数
+  return {
+    temperature: temperature !== undefined ? temperature : 0.7,
+    maxTokens: maxTokens !== undefined ? maxTokens : 1000
+  };
+}
+
 // 模拟AI回复
 function generateMockResponse(message: string, model: string): string {
   const responses = {
@@ -66,21 +83,21 @@ function generateMockResponse(message: string, model: string): string {
       `您的问题很有深度。作为更先进的AI模型，我认为应该从系统性的角度来回答...`
     ],
     'deepseek-chat': [
-      `作为DeepSeek对话模型，我注意到您的问题："${message}"。从技术角度来看...`,
-      `DeepSeek在这类问题上有独特的见解。让我为您提供一个详细的回答...`,
-      `根据DeepSeek的训练数据和算法，我认为这个问题可以这样理解...`
+      `作为DeepSeek对话模型，我注意到您的问题："${message}"。基于优化的参数设置，我可以快速为您分析...`,
+      `DeepSeek在这类问题上有独特的见解。使用优化配置，让我为您提供一个高效的回答...`,
+      `根据DeepSeek的训练数据和优化算法，我认为这个问题可以这样快速理解...`
     ],
     'deepseek-coder': [
-      `作为DeepSeek编程专家，我看到您的问题与技术相关。让我为您提供一个技术性的回答...`,
-      `从编程的角度来看，"${message}"这个问题可以通过以下方式解决...`,
-      `作为专注于代码的AI助手，我建议采用以下技术方案...`
+      `作为DeepSeek编程专家，我看到您的问题与技术相关。使用优化参数，让我为您提供一个快速技术回答...`,
+      `从编程的角度来看，"${message}"这个问题可以通过以下高效方式解决...`,
+      `作为专注于代码的AI助手，我建议采用以下优化的技术方案...`
     ]
   };
 
   const modelResponses = responses[model as keyof typeof responses] || responses['gpt-3.5-turbo'];
   const randomResponse = modelResponses[Math.floor(Math.random() * modelResponses.length)];
   
-  return `${randomResponse}\n\n📝 注意：这是模拟回复，用于演示不同AI模型的响应风格。实际使用时会调用真实的API。`;
+  return `${randomResponse}\n\n⚡ 注意：${model.includes('deepseek') ? 'DeepSeek模型已启用速度优化，' : ''}这是模拟回复，用于演示不同AI模型的响应风格。实际使用时会调用真实的API。`;
 }
 
 // GraphQL 请求函数
@@ -95,8 +112,8 @@ export async function graphqlRequest(query: string, variables?: any): Promise<an
         models: [
           { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo', provider: 'openai', description: 'OpenAI的快速响应模型 (模拟)' },
           { id: 'gpt-4', name: 'GPT-4', provider: 'openai', description: 'OpenAI的最强模型 (模拟)' },
-          { id: 'deepseek-chat', name: 'DeepSeek Chat', provider: 'deepseek', description: 'DeepSeek的对话模型 (模拟)' },
-          { id: 'deepseek-coder', name: 'DeepSeek Coder', provider: 'deepseek', description: 'DeepSeek的代码生成模型 (模拟)' }
+          { id: 'deepseek-chat', name: 'DeepSeek Chat', provider: 'deepseek', description: 'DeepSeek的对话模型 (已优化速度)' },
+          { id: 'deepseek-coder', name: 'DeepSeek Coder', provider: 'deepseek', description: 'DeepSeek的代码生成模型 (已优化速度)' }
         ]
       };
     }
@@ -148,20 +165,29 @@ export async function graphqlRequest(query: string, variables?: any): Promise<an
   }
 }
 
-// 发送聊天消息
+// 发送聊天消息 - 优化版本
 export async function sendChatMessage(
   message: string, 
-  model: string = 'gpt-3.5-turbo',
-  temperature: number = 0.7,
-  maxTokens: number = 1000
+  model: string = 'deepseek-chat',
+  temperature?: number,
+  maxTokens?: number
 ): Promise<string> {
   try {
+    // 根据模型获取优化参数
+    const optimizedParams = getOptimizedParams(model, temperature, maxTokens);
+    
+    console.log('🚀 Sending message with optimized params:', {
+      model,
+      optimizedParams,
+      messageLength: message.length
+    });
+
     const data = await graphqlRequest(CHAT_MUTATION, {
       input: {
         message,
         model,
-        temperature,
-        maxTokens,
+        temperature: optimizedParams.temperature,
+        maxTokens: optimizedParams.maxTokens,
       },
     });
 
@@ -187,6 +213,12 @@ export async function getAvailableModels(): Promise<AIModel[]> {
     console.error('Get models failed:', error);
     // 返回默认模型列表
     return [
+      {
+        id: 'deepseek-chat',
+        name: 'DeepSeek Chat',
+        provider: 'deepseek',
+        description: 'DeepSeek的对话模型 (已优化速度)'
+      },
       {
         id: 'gpt-3.5-turbo',
         name: 'GPT-3.5 Turbo',
