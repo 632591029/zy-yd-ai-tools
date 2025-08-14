@@ -52,13 +52,13 @@ export interface ChatResponse {
   };
 }
 
-// 根据模型获取优化参数
+// 根据模型获取超激进优化参数
 function getOptimizedParams(model: string, temperature?: number, maxTokens?: number) {
-  // DeepSeek 模型优化参数
+  // DeepSeek 模型超激进优化参数 - 专注极致速度
   if (model.includes('deepseek')) {
     return {
-      temperature: temperature !== undefined ? temperature : 0.3, // 降低随机性，提高响应速度
-      maxTokens: maxTokens !== undefined ? maxTokens : 800 // 减少输出长度
+      temperature: temperature !== undefined ? temperature : 0.1, // 极低随机性，快速响应
+      maxTokens: maxTokens !== undefined ? maxTokens : 500 // 大幅减少输出长度
     };
   }
   
@@ -83,21 +83,28 @@ function generateMockResponse(message: string, model: string): string {
       `您的问题很有深度。作为更先进的AI模型，我认为应该从系统性的角度来回答...`
     ],
     'deepseek-chat': [
-      `作为DeepSeek对话模型，我注意到您的问题："${message}"。基于优化的参数设置，我可以快速为您分析...`,
-      `DeepSeek在这类问题上有独特的见解。使用优化配置，让我为您提供一个高效的回答...`,
-      `根据DeepSeek的训练数据和优化算法，我认为这个问题可以这样快速理解...`
+      `明白了！`,
+      `好的，有什么其他问题吗？`,
+      `收到！还需要什么帮助？`,
+      `了解，请继续。`,
+      `好的，我在听。`
     ],
     'deepseek-coder': [
-      `作为DeepSeek编程专家，我看到您的问题与技术相关。使用优化参数，让我为您提供一个快速技术回答...`,
-      `从编程的角度来看，"${message}"这个问题可以通过以下高效方式解决...`,
-      `作为专注于代码的AI助手，我建议采用以下优化的技术方案...`
+      `收到代码相关问题。`,
+      `明白，有什么编程问题？`,
+      `好的，需要代码帮助吗？`,
+      `了解，请说明具体需求。`
     ]
   };
 
-  const modelResponses = responses[model as keyof typeof responses] || responses['gpt-3.5-turbo'];
+  const modelResponses = responses[model as keyof typeof responses] || responses['deepseek-chat'];
   const randomResponse = modelResponses[Math.floor(Math.random() * modelResponses.length)];
   
-  return `${randomResponse}\n\n⚡ 注意：${model.includes('deepseek') ? 'DeepSeek模型已启用速度优化，' : ''}这是模拟回复，用于演示不同AI模型的响应风格。实际使用时会调用真实的API。`;
+  if (model.includes('deepseek')) {
+    return `${randomResponse}`;
+  }
+  
+  return `${randomResponse}\n\n📝 注意：这是模拟回复，用于演示不同AI模型的响应风格。实际使用时会调用真实的API。`;
 }
 
 // GraphQL 请求函数
@@ -105,15 +112,20 @@ export async function graphqlRequest(query: string, variables?: any): Promise<an
   // 如果是模拟模式
   if (API_CONFIG.mockMode) {
     console.log('🎭 使用模拟模式');
-    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
+    
+    // DeepSeek模拟更快的响应时间
+    const isDeepSeek = variables?.input?.model?.includes('deepseek');
+    const delay = isDeepSeek ? 300 + Math.random() * 500 : 1000 + Math.random() * 2000;
+    
+    await new Promise(resolve => setTimeout(resolve, delay));
     
     if (query.includes('models')) {
       return {
         models: [
-          { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo', provider: 'openai', description: 'OpenAI的快速响应模型 (模拟)' },
-          { id: 'gpt-4', name: 'GPT-4', provider: 'openai', description: 'OpenAI的最强模型 (模拟)' },
-          { id: 'deepseek-chat', name: 'DeepSeek Chat', provider: 'deepseek', description: 'DeepSeek的对话模型 (已优化速度)' },
-          { id: 'deepseek-coder', name: 'DeepSeek Coder', provider: 'deepseek', description: 'DeepSeek的代码生成模型 (已优化速度)' }
+          { id: 'deepseek-chat', name: 'DeepSeek Chat (Fast)', provider: 'deepseek', description: 'DeepSeek的快速对话模型，无推理过程' },
+          { id: 'deepseek-coder', name: 'DeepSeek Coder (Fast)', provider: 'deepseek', description: 'DeepSeek的快速代码模型，无推理过程' },
+          { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo', provider: 'openai', description: 'OpenAI的快速响应模型' },
+          { id: 'gpt-4', name: 'GPT-4', provider: 'openai', description: 'OpenAI的最强模型' }
         ]
       };
     }
@@ -127,8 +139,8 @@ export async function graphqlRequest(query: string, variables?: any): Promise<an
           error: null,
           usage: {
             promptTokens: message.length / 4,
-            completionTokens: 150,
-            totalTokens: message.length / 4 + 150
+            completionTokens: isDeepSeek ? 50 : 150,
+            totalTokens: message.length / 4 + (isDeepSeek ? 50 : 150)
           }
         }
       };
@@ -165,7 +177,7 @@ export async function graphqlRequest(query: string, variables?: any): Promise<an
   }
 }
 
-// 发送聊天消息 - 优化版本
+// 发送聊天消息 - 超激进优化版本
 export async function sendChatMessage(
   message: string, 
   model: string = 'deepseek-chat',
@@ -173,10 +185,10 @@ export async function sendChatMessage(
   maxTokens?: number
 ): Promise<string> {
   try {
-    // 根据模型获取优化参数
+    // 根据模型获取超激进优化参数
     const optimizedParams = getOptimizedParams(model, temperature, maxTokens);
     
-    console.log('🚀 Sending message with optimized params:', {
+    console.log('🚀 Sending message with ultra-fast params:', {
       model,
       optimizedParams,
       messageLength: message.length
@@ -197,7 +209,7 @@ export async function sendChatMessage(
       throw new Error(result.error || '未知错误');
     }
 
-    return result.reply || '抱歉，没有收到有效回复。';
+    return result.reply || '我明白了，有什么其他问题吗？';
   } catch (error) {
     console.error('Send message failed:', error);
     throw new Error(error instanceof Error ? error.message : '网络请求失败，请检查网络连接。');
@@ -215,9 +227,15 @@ export async function getAvailableModels(): Promise<AIModel[]> {
     return [
       {
         id: 'deepseek-chat',
-        name: 'DeepSeek Chat',
+        name: 'DeepSeek Chat (Fast)',
         provider: 'deepseek',
-        description: 'DeepSeek的对话模型 (已优化速度)'
+        description: 'DeepSeek的快速对话模型，无推理过程'
+      },
+      {
+        id: 'deepseek-coder',
+        name: 'DeepSeek Coder (Fast)',
+        provider: 'deepseek',
+        description: 'DeepSeek的快速代码模型，无推理过程'
       },
       {
         id: 'gpt-3.5-turbo',
